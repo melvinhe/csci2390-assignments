@@ -2,18 +2,34 @@ from client import count, _pretty_print
 from matplotlib import pyplot
 
 import sys
+import numpy as np
 
 # Return a random sample from laplace with mean/loc = mu and scale/spread b.
 def laplace(mu, b):
   # TODO: implement laplace sampling or use numpy's laplace.
-  return "?"
+  return np.random.laplace(mu, b)
+
+# Return the sensitivity of the histogram query grouped by age and music taste.
+def sensitivity():
+    # Get the exact histogram without noise.
+    ''''''
+    headers, rows = count(["age", "music"], False)
+
+    # Find the maximum difference in counts between neighboring datasets.
+    max_diff = 0
+    for i in range(len(rows)):
+        for j in range(i + 1, len(rows)):
+            diff = abs(rows[i][-1] - rows[j][-1])
+            max_diff = max(max_diff, diff)
+
+    return max_diff
 
 # Return a noised histogram that is epsilon-dp.
 def dp_histogram(epsilon):
   # TODO: Find out the parameters for the noise distribution.
-  sensitivity = "?"
-  mu = "?"
-  b = "?"
+  sens = sensitivity()
+  mu = 0
+  b = sens / epsilon
   
   # Get the exact histogram without noise.
   headers, rows = count(["age", "music"], False)
@@ -22,11 +38,12 @@ def dp_histogram(epsilon):
   noised_rows = []
   for (age, music, value) in rows:
     # TODO: compute the noised value.
+    noise = laplace(mu, b)
     # TODO: round the noised_value to the closest integer.
-    noised_value = "?"
+    noised_value = round(value + noise)
 
     # Append the noised value and associated group by labels.
-    noised_rows.append((age, music, noised_value))  
+    noised_rows.append((age, music, noised_value))
 
   return headers, noised_rows
 
@@ -65,8 +82,8 @@ if __name__ == "__main__":
   _pretty_print(headers, rows)
 
   # Plotting code.
-  '''
+  
   print("Plotting, this may take a minute ...")
   plot(epsilon)
   print("Plot saved at 'dp-plot.png'")
-  '''
+  
